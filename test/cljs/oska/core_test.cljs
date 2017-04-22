@@ -34,4 +34,8 @@
   (testing "cannot move to occupied cell"
     (is (not (core/valid-move? [(->piece :red 1 1) (->piece :blue 0 0)] (->piece :red 1 1) [0 0]))))
   (testing "cannot move to non-existent cell"
-    (is (not (core/valid-move? [(->piece :red 1 1) (->piece :blue 0 0)] (->piece :red 1 1) [2 0])))))
+    (is (not (core/valid-move? [(->piece :red 1 1) (->piece :blue 0 0)] (->piece :red 1 1) [2 0]))))
+  (testing "can jump"
+    (is (core/valid-move? [(->piece :red 2 2) (->piece :blue 1 1)] (->piece :red 2 2) [0 0])))
+  (testing "doesn't jump unless the other player is adjacent"
+    (is (not (core/valid-move? [(->piece :red 2 2)] (->piece :red 2 2) [0 0])))))

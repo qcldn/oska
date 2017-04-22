@@ -13,12 +13,6 @@
        (player-pieces player)
        (every? #(= (:x %) (winning-row player)))))
 
-(defn adjacent-cells [[x y]]
-  #{[(dec x) (dec y)]
-    [(inc x) (dec y)]
-    [(dec x) (inc y)]
-    [(inc x) (inc y)]})
-
 (defn occupied-cells [pieces]
   (set (map #(vector (:x %) (:y %)) pieces)))
 
@@ -34,10 +28,30 @@
 (defn- ->cell [piece]
   [(:x piece) (:y piece)])
 
+(def directions
+  [[1 1] [-1 -1] [1 -1] [-1 1]])
+
+(defn- cell-add [& cells]
+  (reduce #(map + %1 %2) [0 0] cells))
+
+(defn adjacent-cells [cell]
+  (set (map #(cell-add cell %) directions)))
+
+(defn- enemy-player [player]
+  (if :red :blue :red))
+
+(defn- enemy-jump-cells [pieces player cell]
+  (let [enemy-cells (map ->cell (player-pieces (enemy-player player) pieces))]
+    (->> directions
+         (filter #(some #{(cell-add cell %1)} enemy-cells))
+         (map #(cell-add cell % %))
+         (set))))
+
 (defn valid-move? [pieces piece-to-move cell]
   (and (contains? cells cell)
-       (contains? (adjacent-cells (->cell piece-to-move)) cell)
-       (not (contains? (occupied-cells pieces) cell))))
+       (not (contains? (occupied-cells pieces) cell))
+       (or (contains? (adjacent-cells (->cell piece-to-move)) cell)
+           (contains? (enemy-jump-cells pieces (:player piece-to-move) (->cell piece-to-move)) cell))))
 
 
 ;  0  1  2  3  4
