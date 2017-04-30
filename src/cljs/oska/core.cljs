@@ -19,6 +19,16 @@
 (defn occupied-cells [pieces]
   (set (map #(->cell %) pieces)))
 
+(def initial-game
+  [{:player :blue :x 0 :y 0}
+   {:player :blue :x 0 :y 2}
+   {:player :blue :x 0 :y 4}
+   {:player :blue :x 0 :y 6}
+   {:player :red :x 4 :y 0}
+   {:player :red :x 4 :y 2}
+   {:player :red :x 4 :y 4}
+   {:player :red :x 4 :y 6}])
+
 (def cells
   #{[0 0]       [4 0]
       [1 1]   [3 1]
@@ -63,12 +73,9 @@
 ; 5   x     x
 ; 6x           x
 
-; [ cell & cells ]  [ [ 1 2] [ 2 3] [4 5] ]  cell = [ 1 2]  cells [ [2 3 ] [4 5] ]  
-; [ [x y] & cells]  x = 1  y = 2 
-
 (defn draw-cells [cells svg-element]
   (doall (map #(let [[x y] %
-        circle-element (.createElement js/document "circle")]
+        circle-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
     (.add (.-classList circle-element) "cell")
     (.setAttribute circle-element "cx" (+ 25 (* 50 x)))
     (.setAttribute circle-element "cy" (+ 25 (* 50 y)))
@@ -77,10 +84,14 @@
 
 (defn draw-pieces [pieces svg-element]
   (doall (map #(let [piece %
-                circle-element (.createElement js/document "circle")]
+                circle-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
     (.add (.-classList circle-element) "piece")
     (.setAttribute circle-element "cx" (+ 25 (* 50 (:x piece))))
     (.setAttribute circle-element "cy" (+ 25 (* 50 (:y piece))))
     (.setAttribute circle-element "r" 10)
     (.setAttribute circle-element "fill" (name (:player piece)))
     (.appendChild svg-element circle-element)) pieces)))
+
+(when-let [svg-element (.querySelector js/document "svg")]
+  (draw-cells cells svg-element)
+  (draw-pieces initial-game svg-element))

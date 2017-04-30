@@ -3,9 +3,6 @@
   (:require [cljs.test :as test]
             [oska.core :as core]))
 
-;[1 2 3]
-;{:a 1 :b 2}
-; #{1 2 3}
 (defn- ->piece [player x y]
   {:player player :x x :y y})
 
@@ -45,7 +42,7 @@
 (defn- ->pos [circle-element]
  [(getIntAttribute circle-element "cx") (getIntAttribute circle-element "cy")])
 
-(defn- ->fill [circle-element] 
+(defn- ->fill [circle-element]
   (.getAttribute circle-element "fill"))
 
 (defn- perform-draw-cells [cells]
@@ -61,6 +58,8 @@
 (deftest draw-cells []
   (testing "draws a single cell"
      (is (= 1 (count (perform-draw-cells #{[0 0]})))))
+  (testing "sets the namespace uri"
+    (is (= "http://www.w3.org/2000/svg" (.-namespaceURI (first (perform-draw-cells #{[0 0]}))))))
   (testing "draws cell 0 0 in 25 25"
      (is (= [25 25] (->pos (first (perform-draw-cells #{[0 0]}))))))
   (testing "draws cell 1 1 in 75 75"
@@ -73,6 +72,8 @@
 (deftest draw-pieces []
   (testing "draws a piece"
     (is (= 1 (count (perform-draw-pieces [(->piece :red 0 0)])))))
+  (testing "sets the namespace uri"
+    (is (= "http://www.w3.org/2000/svg" (.-namespaceURI (first (perform-draw-pieces [(->piece :red 0 0)]))))))
   (testing "piece has red fill"
     (is (= "red" (->fill (first (perform-draw-pieces [(->piece :red 0 0)]))))))
   (testing "piece has blue fill"
@@ -82,6 +83,6 @@
   (testing "draws piece 1 1 in 75 75"
     (is (= [75 75] (->pos (first (perform-draw-pieces [(->piece :blue 1 1)]))))))
   (testing "circles have radius 10"
-    (is (= 10 (getIntAttribute (first (perform-draw-pieces [(->piece :blue 0 0)])) "r")))) 
+    (is (= 10 (getIntAttribute (first (perform-draw-pieces [(->piece :blue 0 0)])) "r"))))
   (testing "draws multiple pieces"
     (is (= [[25 25] [75 75]] (map ->pos (perform-draw-pieces [(->piece :blue 0 0) (->piece :blue 1 1)]))))))
