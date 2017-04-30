@@ -10,6 +10,11 @@ or
 
 `boot watch testing test-cljs`
 
+### Running the app
+
+`boot cljs -- target`
+`open target/index.html`
+
 ## Contributors
 
 Daniel Irvine [@dirv](https://github.com/dirv)
