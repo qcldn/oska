@@ -13,8 +13,11 @@
        (player-pieces player)
        (every? #(= (:x %) (winning-row player)))))
 
+(defn- ->cell [piece]
+  [(:x piece) (:y piece)])
+
 (defn occupied-cells [pieces]
-  (set (map #(vector (:x %) (:y %)) pieces)))
+  (set (map #(->cell %) pieces)))
 
 (def cells
   #{[0 0]       [4 0]
@@ -24,9 +27,6 @@
     [0 4] [2 4] [4 4]
       [1 5]   [3 5]
     [0 6]       [4 6]})
-
-(defn- ->cell [piece]
-  [(:x piece) (:y piece)])
 
 (def directions
   [[1 1] [-1 -1] [1 -1] [-1 1]])
