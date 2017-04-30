@@ -63,4 +63,24 @@
 ; 5   x     x
 ; 6x           x
 
+; [ cell & cells ]  [ [ 1 2] [ 2 3] [4 5] ]  cell = [ 1 2]  cells [ [2 3 ] [4 5] ]  
+; [ [x y] & cells]  x = 1  y = 2 
 
+(defn draw-cells [cells svg-element]
+  (doall (map #(let [[x y] %
+        circle-element (.createElement js/document "circle")]
+    (.add (.-classList circle-element) "cell")
+    (.setAttribute circle-element "cx" (+ 25 (* 50 x)))
+    (.setAttribute circle-element "cy" (+ 25 (* 50 y)))
+    (.setAttribute circle-element "r" 2)
+    (.appendChild svg-element circle-element)) cells)))
+
+(defn draw-pieces [pieces svg-element]
+  (doall (map #(let [piece %
+                circle-element (.createElement js/document "circle")]
+    (.add (.-classList circle-element) "piece")
+    (.setAttribute circle-element "cx" (+ 25 (* 50 (:x piece))))
+    (.setAttribute circle-element "cy" (+ 25 (* 50 (:y piece))))
+    (.setAttribute circle-element "r" 10)
+    (.setAttribute circle-element "fill" (name (:player piece)))
+    (.appendChild svg-element circle-element)) pieces)))
