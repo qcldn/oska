@@ -82,6 +82,16 @@
     (.setAttribute circle-element "r" 2)
     (.appendChild svg-element circle-element)) cells)))
 
+(defn draw-rect-cells [cells svg-element]
+  (doall (map #(let [[x y] %
+        rect-element (.createElementNS js/document "http://www.w3.org/2000/svg" "rect")]
+        (.setAttribute rect-element "x" (+ 25 (* 50 x)))
+        (.setAttribute rect-element "y" (+ 25 (* 50 y)))
+        (.setAttribute rect-element "height" 71)
+        (.setAttribute rect-element "width" 71)
+        (.setAttribute rect-element "style" "transform-origin: center; transform: translate(-35px, -35px) rotate(45deg); fill: white; stroke: black; stroke-width: 2px;")
+        (.appendChild svg-element rect-element)) cells)))
+
 (defn draw-pieces [pieces svg-element]
   (doall (map #(let [piece %
                 circle-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
@@ -93,5 +103,6 @@
     (.appendChild svg-element circle-element)) pieces)))
 
 (when-let [svg-element (.querySelector js/document "svg")]
+  (draw-rect-cells cells svg-element)
   (draw-cells cells svg-element)
   (draw-pieces initial-game svg-element))

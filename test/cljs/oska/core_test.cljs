@@ -42,6 +42,10 @@
 (defn- ->pos [circle-element]
  [(getIntAttribute circle-element "cx") (getIntAttribute circle-element "cy")])
 
+(defn- ->rect-pos [rect-element]
+  [(getIntAttribute rect-element "x") (getIntAttribute rect-element "y")
+  (getIntAttribute rect-element "height") (getIntAttribute rect-element "width")])
+
 (defn- ->fill [circle-element]
   (.getAttribute circle-element "fill"))
 
@@ -49,6 +53,11 @@
   (let [svg-element (.createElement js/document "svg")]
     (core/draw-cells cells svg-element)
     (array-seq (.querySelectorAll svg-element "svg circle.cell"))))
+
+(defn- perform-draw-rect-cells [cells]
+  (let [svg-element (.createElement js/document "svg")]
+    (core/draw-rect-cells cells svg-element)
+    (array-seq (.querySelectorAll svg-element "svg rect"))))
 
 (defn- perform-draw-pieces [pieces]
   (let [svg-element (.createElement js/document "svg")]
@@ -68,6 +77,23 @@
      (is (= [[25 25] [75 75]] (map ->pos (perform-draw-cells #{[0 0] [1 1]})))))
   (testing "circles have r 2"
      (is (= 2 (getIntAttribute (first (perform-draw-cells #{[0 0]})) "r")))))
+
+(deftest draw-rect-cells []
+  (testing "draws a single cell"
+    (is (= 1 (count (perform-draw-rect-cells #{[0 0]})))))
+  (testing "sets the namespace uri"
+    (is (= "http://www.w3.org/2000/svg" (.-namespaceURI (first (perform-draw-rect-cells #{[0 0]}))))))
+  (testing "draws cell 0 0 in 25 25 with height and width 71"
+     (is (= [25 25 71 71] (->rect-pos (first (perform-draw-rect-cells #{[0 0]}))))))
+
+  ; nicer way to test styles individually, but for some reason accessing style properties isn't working
+  ; (testing "cell has correct transform"
+    ; (is (= "translate(-35px, -35px) rotate(45deg)" (.-transform (.-style (first (perform-draw-rect-cells #{[0 0]})))))))
+ (testing "cell has styling information"
+   (is (= "transform-origin: center; transform: translate(-35px, -35px) rotate(45deg); fill: white; stroke: black; stroke-width: 2px;" (.getAttribute (first (perform-draw-rect-cells #{[0 0]})) "style"))))
+  (testing "draws multiple cells"
+     (is (= [[25 25 71 71] [75 75 71 71]] (map ->rect-pos (perform-draw-rect-cells #{[0 0] [1 1]})))))
+)
 
 (deftest draw-pieces []
   (testing "draws a piece"
